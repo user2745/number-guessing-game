@@ -7,11 +7,14 @@ import "./external/ISynthetixCore.sol";
 
 
 import "lib/forge-std/src/interfaces/IERC20.sol";
-import "lib/chainlink/contracts/src/v0.8/VRFV2WrapperConsumerBase.sol";
+import "lib/chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
 
 
 
 contract NumberGuessingGame is VRFV2WrapperConsumerBase, IMarket {
+
+    event MarketRegistered(uint128 indexed marketId);
+
 
     //Variable Declarations
     ISynthetixCore public synthetix;
@@ -19,7 +22,7 @@ contract NumberGuessingGame is VRFV2WrapperConsumerBase, IMarket {
     uint128 public marketId;
 
     uint public prize;
-    uint256 public ticktCost;
+    uint256 public ticketCost;
     uint256 public feePercent;
 
     uint256 private currentDrawRound;
@@ -56,7 +59,7 @@ contract NumberGuessingGame is VRFV2WrapperConsumerBase, IMarket {
         }
     }
 
-    function buy(address benficary, unit guessNumber) {
+    function buy(address benficary, uint guessNumber) external {
 
         address[] storage bucketParticipants = ticketBuckets[currentDrawRound][guessNumber % _bucketCount()];
 
@@ -68,7 +71,7 @@ contract NumberGuessingGame is VRFV2WrapperConsumerBase, IMarket {
     }
 
 
-    function getMaxBucketparticipants() public view returns (uint256) {
+    function getMaxBucketParticipants() public view returns (uint256) {
         return synthetix.getWithdrawableMarketUsd(marketId) / prize;
     }
 
@@ -137,9 +140,9 @@ contract NumberGuessingGame is VRFV2WrapperConsumerBase, IMarket {
     }
 
     // Functions
-    function name(unit128 _marketId) external override view returns (string memory n) {
+    function name(uint128 _marketId) external override view returns (string memory n) {
         if (_marketId == marketId) {
-            n = string(abi.encodedPacked("Market ", bytes32(uint256(_marketId))));
+            n = string(abi.encodePacked("Market ", bytes32(uint256(_marketId))));
         }
     }
 
